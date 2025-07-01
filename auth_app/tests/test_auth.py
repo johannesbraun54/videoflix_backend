@@ -8,7 +8,7 @@ class RegistartionTest(APITestCase):
         self.client = APIClient()
 
     def test_check_existing_email(self):
-        url = reverse('verif_email')
+        url = reverse('email_availability')
         new_email = 'example@mail.de'
         reponse = self.client.post(url, {'email': new_email})
         self.assertEqual(reponse.status_code, status.HTTP_200_OK)
