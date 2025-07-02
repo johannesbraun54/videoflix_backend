@@ -2,11 +2,14 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from django.contrib.auth.models import User
+# import pytest
+
 
 class RegistartionTest(APITestCase):
     def setUp(self):
         self.client = APIClient()
 
+    # @pytest.mark.django_db
     def test_check_new_email_availability(self):
         url = reverse('email_availability')
         new_email = 'example@mail.de'
