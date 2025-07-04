@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 @api_view(['POST'])
 def check_email_availability(request):
     if request.method == 'POST':
+        print(request.data)
         email = request.data.get('email')
         if not email:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
