@@ -56,10 +56,10 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        refresh = response.data.get('refresh')
-        access = response.data.get('access')
+        refresh = response.data.get('refresh') # token for refreshing
+        access = response.data.get('access') # token for accessing protected resources
 
-        response.set_cookie(
+        response.set_cookie( 
             key='access_token',
             value=access,
             httponly=True,
@@ -87,13 +87,13 @@ class CookieRefreshView(TokenRefreshView):
         if refresh_token is None:
             return Response({"detail":"Refresh token not found"}, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = self.get_serializer(data={'refresh': refresh_token})
+        serializer = self.get_serializer(data={'refresh': refresh_token}) # warum so? weil der TokenRefreshView erwartet, dass die Daten in einem bestimmten Format sind, und wir hier den refresh token aus den Cookies holen müssen.
         try:
             serializer.is_valid(raise_exception=True)
         except:
             return Response({"detail":"Refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
         
-        access_token = serializer.validated_data.get('access')
+        access_token = serializer.validated_data.get('access') # warum ist das so? weil der TokenRefreshView den access token aus dem refresh token generiert und wir ihn hier brauchen, um ihn in einem Cookie zu setzen.
         response = Response({"message":"access token refreshed"}, status=status.HTTP_200_OK)
         
         response.set_cookie(
