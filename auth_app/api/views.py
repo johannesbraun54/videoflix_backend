@@ -4,7 +4,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import RegistrationSerializer
+from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 
 @api_view(['POST'])
 def check_email_availability(request):
@@ -54,10 +54,15 @@ from rest_framework_simplejwt.views import (
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     
+    serializer_class = CustomTokenObtainPairSerializer
+    
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        refresh = response.data.get('refresh') # token for refreshing
-        access = response.data.get('access') # token for accessing protected resources
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_execption=True)
+        
+        refresh = serializer.validated_data['refresh'] # token for refreshing
+        access = serializer.validated_data['access'] # token for accessing protected resources
+        response = Response({"message":"login successful"}, status=status.HTTP_200_OK)
 
         response.set_cookie( 
             key='access_token',
