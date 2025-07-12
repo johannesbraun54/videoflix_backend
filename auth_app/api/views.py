@@ -2,11 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
+from .utils import create_username
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def check_email_availability(request):
     
     if request.method == 'POST':
@@ -20,12 +23,14 @@ def check_email_availability(request):
         else:
             return Response({"exists": False}, status=status.HTTP_200_OK)
 
-
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        request.data._mutable = True
+        request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
+ 
         
         data = {}
         if serializer.is_valid():
@@ -39,18 +44,7 @@ class RegistrationView(APIView):
         else:
             data = serializer.errors
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        
-class HelloWorldView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({"message": "Hello, World!"}, status=status.HTTP_200_OK)
     
-
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     
@@ -58,8 +52,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_execption=True)
-        
+        serializer.is_valid(raise_exception=True)           
         refresh = serializer.validated_data['refresh'] # token for refreshing
         access = serializer.validated_data['access'] # token for accessing protected resources
         response = Response({"message":"login successful"}, status=status.HTTP_200_OK)
