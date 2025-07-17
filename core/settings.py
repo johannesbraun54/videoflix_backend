@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -41,19 +40,19 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://lo
 # Application definition
 
 INSTALLED_APPS = [
+    'auth_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth_app',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
-    # 'authemail',
-    'django_rq'
+    'django_rq',
+    'authemail',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]         
 
+AUTH_USER_MODEL = 'auth_app.VideoflixUser'
 # CSRF_TRUSTED_ORIGINS = [
 
 #     'http://127.0.0.1:4200',
@@ -76,6 +76,7 @@ MIDDLEWARE = [
 #     'http://localhost:4200',
 
 # ]
+
 
 CORS_ALLOWED_ORIGINS = [
 
