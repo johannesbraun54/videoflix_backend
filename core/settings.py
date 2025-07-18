@@ -41,6 +41,7 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://lo
 
 INSTALLED_APPS = [
     'auth_app',
+    'authemail',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,7 +53,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'django_rq',
-    'authemail',
 ]
 
 MIDDLEWARE = [
