@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from .utils import create_username
+from authemail import wrapper
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -30,7 +32,9 @@ class RegistrationView(APIView):
         request.data._mutable = True
         request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
- 
+        
+
+
         
         data = {}
         if serializer.is_valid():
@@ -40,6 +44,8 @@ class RegistrationView(APIView):
                 'email': saved_account.email,
                 'user_id': saved_account.pk
             }
+            account = wrapper.Authemail()
+            account.signup(first_name=saved_account.username, last_name=saved_account.username, email=saved_account.email, password=saved_account.password)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors

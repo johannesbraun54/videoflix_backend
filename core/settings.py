@@ -33,6 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
+EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 
 
 
