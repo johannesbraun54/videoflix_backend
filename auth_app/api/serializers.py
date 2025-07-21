@@ -23,6 +23,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return value
     
     def validate_email(self, value):
+        print("EIXISTS")
         if VideoflixUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email is already in use")
         return value

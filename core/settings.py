@@ -33,8 +33,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+
 EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
+EMAIL_HOST = os.environ.get('AUTHEMAIL_EMAIL_HOST', default='smtp.gmail.com') 
+EMAIL_PORT = os.environ.get('AUTHEMAIL_EMAIL_PORT', default=587)
+EMAIL_HOST_USER = os.environ.get('AUTHEMAIL_EMAIL_HOST_USER', default="username")
+EMAIL_HOST_PASSWORD = os.environ.get('AUTHEMAIL_EMAIL_HOST_PASSWORD', default="userpassword")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 

@@ -29,12 +29,8 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        request.data._mutable = True
         request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
-        
-
-
         
         data = {}
         if serializer.is_valid():
@@ -45,7 +41,8 @@ class RegistrationView(APIView):
                 'user_id': saved_account.pk
             }
             account = wrapper.Authemail()
-            account.signup(first_name=saved_account.username, last_name=saved_account.username, email=saved_account.email, password=saved_account.password)
+            account.signup(email=saved_account.email, password=saved_account.password,
+                           first_name=saved_account.username, last_name=saved_account.username)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors
