@@ -42,7 +42,7 @@ class RegistrationView(APIView):
             }
             account = wrapper.Authemail()
             account.signup(email=saved_account.email, password=saved_account.password,
-                           first_name=saved_account.username, last_name=saved_account.username)
+                           first_name="test", last_name="test")
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors
