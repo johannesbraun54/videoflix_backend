@@ -32,20 +32,21 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-@#x5h3zj!g+8g1v@2^
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:5500").split(",")
+CORS_ALLOWED_ORIGINS =  os.environ.get("CORS_ALLOWED_ORIGINS", default="http://localhost:5500").split(",") 
+CORS_ALLOW_CREDENTIALS = True
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST') 
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
 EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
-EMAIL_HOST = os.environ.get('AUTHEMAIL_EMAIL_HOST', default='smtp.gmail.com') 
-EMAIL_PORT = os.environ.get('AUTHEMAIL_EMAIL_PORT', default=587)
-EMAIL_HOST_USER = os.environ.get('AUTHEMAIL_EMAIL_HOST_USER', default="username")
-EMAIL_HOST_PASSWORD = os.environ.get('AUTHEMAIL_EMAIL_HOST_PASSWORD', default="userpassword")
-EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
 EMAIL_USE_SSL = False
 
 AUTH_EMAIL_VERIFICATION = True
-
-
 
 # Application definition
 
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,27 +76,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]         
 
 AUTH_USER_MODEL = 'auth_app.VideoflixUser'
-# CSRF_TRUSTED_ORIGINS = [
-
-#     'http://127.0.0.1:4200',
-
-#     'http://localhost:4200',
-
-# ]
-
-
-CORS_ALLOWED_ORIGINS = [
-
-    'http://127.0.0.1:4200',
-
-    'http://localhost:4200',
-
-]
 
 ROOT_URLCONF = 'core.urls'
 
