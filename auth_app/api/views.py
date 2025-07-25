@@ -15,7 +15,6 @@ from authemail import wrapper
 def check_email_availability(request):
     
     if request.method == 'POST':
-        print(request.data)
         email = request.data.get('email')
         if not email:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -35,14 +34,16 @@ class RegistrationView(APIView):
         data = {}
         if serializer.is_valid():
             saved_account = serializer.save()
-            data = {
-                'username': saved_account.username,
-                'email': saved_account.email,
-                'user_id': saved_account.pk
-            }
             account = wrapper.Authemail()
             account.signup(email=saved_account.email, password=saved_account.password,
                            first_name="test", last_name="test")
+        
+            data = { "user": {
+                'id': saved_account.pk,
+                'email': saved_account.email,
+            },
+                "token": "activation_token"
+            }
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors
