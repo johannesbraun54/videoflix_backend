@@ -33,14 +33,14 @@ class RegistrationView(APIView):
         
         data = {}
         if serializer.is_valid():
-            saved_account = serializer.save()
+            new_account = serializer.validated_data
             account = wrapper.Authemail()
-            account.signup(email=saved_account.email, password=saved_account.password,
+            account.signup(email=new_account.get('email', None), password=new_account.get('password', None),
                            first_name="test", last_name="test")
         
             data = { "user": {
-                'id': saved_account.pk,
-                'email': saved_account.email,
+                'id': 1,
+                'email':'braunjohannes2002@gmial.com',
             },
                 "token": "activation_token"
             }
