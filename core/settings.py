@@ -57,7 +57,7 @@ AUTH_EMAIL_VERIFICATION = True
 INSTALLED_APPS = [
     'corsheaders',
     'auth_app.apps.AuthAppConfig',
-    'videoflix_app',
+    'videoflix_app.apps.VideoflixAppConfig',
     'authemail',
     'django.contrib.admin',
     'django.contrib.auth',
