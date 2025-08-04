@@ -34,11 +34,10 @@ class RegistrationView(APIView):
         
         data = {}
         if serializer.is_valid():
+            ###################  TODO: email versand richtig aufrufen
             new_account = serializer.validated_data
-            account = wrapper.Authemail()
-            account.signup(email=new_account.get('email', None), password=new_account.get('password', None),
-                           first_name="test", last_name="test")
-        
+            serializer.save()
+           
             data = { "user": {
                 'id': 1,
                 'email':'braunjohannes2002@gmial.com',
