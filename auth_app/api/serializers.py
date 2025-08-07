@@ -10,7 +10,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = VideoflixUser
-        fields = ('username', 'email', 'password', 'confirmed_password')
+        fields = ( 'id', 'username', 'email', 'password', 'confirmed_password')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -23,22 +23,21 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return value
     
     def validate_email(self, value):
-        print("EIXISTS")
         if VideoflixUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email is already in use")
         return value
     
-    # def save(self):
+    def save(self):
         
-    #     pw = self.validated_data['password']
+        pw = self.validated_data['password']
         
-    #     account = VideoflixUser(
-    #         username=self.validated_data['username'],
-    #         email=self.validated_data['email']
-    #     )
-    #     account.set_password(pw)
-    #     account.save()
-    #     return account
+        account = VideoflixUser(
+            username=self.validated_data['username'],
+            email=self.validated_data['email']
+        )
+        account.set_password(pw)
+        account.save()
+        return account
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField()

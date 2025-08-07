@@ -8,6 +8,9 @@ from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from .utils import create_username
 from authemail import wrapper
+from ..tasks import send_mail
+import django_rq
+
 
 
 @api_view(['POST'])
@@ -28,21 +31,22 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        print("Haaaaalllloooooo")
         request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
         
         data = {}
         if serializer.is_valid():
-            ###################  TODO: email versand richtig aufrufen
-            new_account = serializer.validated_data
-            serializer.save()
+            
+            new_account = serializer.save()
+            
+            queue = django_rq.get_queue("default", autocommit=True)
+            queue.enqueue(send_mail, new_account)
            
             data = { "user": {
-                'id': 1,
-                'email':'braunjohannes2002@gmial.com',
+                'id': new_account.id,
+                'email': new_account.email,
             },
-                "token": "activation_token"
+                "token": "new_account.token"
             }
             return Response(data, status=status.HTTP_201_CREATED)
         else:
