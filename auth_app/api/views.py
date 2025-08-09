@@ -38,15 +38,14 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             
             new_account = serializer.save()
-            
+            new_account.first_name = new_account.id
             queue = django_rq.get_queue("default", autocommit=True)
             queue.enqueue(send_mail, new_account)
+            
            
-            data = { "user": {
+            data = {
                 'id': new_account.id,
                 'email': new_account.email,
-            },
-                "token": "new_account.token"
             }
             return Response(data, status=status.HTTP_201_CREATED)
         else:

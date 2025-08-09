@@ -6,9 +6,9 @@ import django_rq
 
 
 
-@receiver(post_save, sender=VideoflixUser)
-def user_post_save(sender, instance, created, **kwargs):
-    print("email wurde gesendet")
-    if created: 
-        queue = django_rq.get_queue("default", autocommit=True)
-        queue.enqueue(send_mail, instance)
+# @receiver(post_save, sender=VideoflixUser)
+# def user_post_save(sender, instance, created, **kwargs):
+#     print("email wurde gesendet")
+#     if created: 
+#         queue = django_rq.get_queue("default", autocommit=True)
+#         queue.enqueue(send_mail, instance)
