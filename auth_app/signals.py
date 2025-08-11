@@ -1,7 +1,7 @@
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from .models import VideoflixUser
-from .tasks import send_mail
+# from django.dispatch import receiver
+# from django.db.models.signals import post_save
+# # from .models import VideoflixUser
+# from .tasks import send_mail
 import django_rq
 
 

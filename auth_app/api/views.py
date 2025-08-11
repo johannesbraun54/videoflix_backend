@@ -8,8 +8,12 @@ from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from .utils import create_username
 from authemail import wrapper
-from ..tasks import send_mail
+from ..tasks import send_mail, send_new_signup_email
 import django_rq
+import uuid
+from ..models import Userprofile
+
+
 
 
 
@@ -26,6 +30,11 @@ def check_email_availability(request):
             return Response({"exists": True}, status=status.HTTP_200_OK)
         else:
             return Response({"exists": False}, status=status.HTTP_200_OK)
+        
+def create_userprofile(new_profile, token):
+    userprofile = Userprofile.objects.create(user=new_profile, username=new_profile.username,email=new_profile.email, token=token)
+    return userprofile
+    
 
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
@@ -38,9 +47,11 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             
             new_account = serializer.save()
-            new_account.first_name = new_account.id
+            
+            token = uuid.uuid4().hex
+            
             queue = django_rq.get_queue("default", autocommit=True)
-            queue.enqueue(send_mail, new_account)
+            queue.enqueue(send_new_signup_email, create_userprofile(new_account, token))
             
            
             data = {

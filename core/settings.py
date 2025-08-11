@@ -46,8 +46,8 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
-EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
-EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='noreply@example.com')
+EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='johannesbraun02@gmail.com')
+EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='johannesbraun02@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
 EMAIL_USE_SSL = False
 
@@ -57,9 +57,9 @@ AUTH_EMAIL_VERIFICATION = True
 
 INSTALLED_APPS = [
     'corsheaders',
-    'auth_app.apps.AuthAppConfig',
+    'auth_app',
     'videoflix_app.apps.VideoflixAppConfig',
-    'authemail',
+    # 'authemail',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -84,7 +84,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]         
 
-AUTH_USER_MODEL = 'auth_app.VideoflixUser'
+# AUTH_USER_MODEL = 'auth_app.VideoflixUser'
 
 ROOT_URLCONF = 'core.urls'
 

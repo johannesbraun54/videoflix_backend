@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from ..models import VideoflixUser
+# from ..models import VideoflixUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
@@ -9,7 +9,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     confirmed_password = serializers.CharField(write_only=True)
     
     class Meta:
-        model = VideoflixUser
+        model = User
         fields = ( 'id', 'username', 'email', 'password', 'confirmed_password')
         extra_kwargs = {
             'password': {'write_only': True}
@@ -23,7 +23,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return value
     
     def validate_email(self, value):
-        if VideoflixUser.objects.filter(email=value).exists():
+        if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email is already in use")
         return value
     
@@ -31,7 +31,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         
         pw = self.validated_data['password']
         
-        account = VideoflixUser(
+        account = User(
             username=self.validated_data['username'],
             email=self.validated_data['email']
         )
@@ -51,14 +51,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        user = VideoflixUser.objects.get(email=email)
+        user = User.objects.get(email=email)
         
         try:
-            user = VideoflixUser.objects.get(email=email)
-        except VideoflixUser.DoesNotExist:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError("password or username wrong")
         
-        if not VideoflixUser.check_password(password):
+        if not User.check_password(password):
             raise serializers.ValidationError("password or username wrong")
         
         data = super().validate({"username": user.username, "password": password})
