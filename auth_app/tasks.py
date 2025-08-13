@@ -1,18 +1,25 @@
 # from authemail import wrapper
 # from authemail.models import send_multi_format_email
 
+import base64
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import Userprofile
+from django.utils.http import urlsafe_base64_encode
 
 def send_new_signup_email(new_account):
-    template_name = "templates/authemail/signup_email.html" ## passt der pfad?
+    template_name = "signup_email.html" 
     verify_subject = "Verify your Videoflix account"
+    
+    data = str(new_account.id)
+    data_bytes = data.encode("utf-8")
+    bytes = base64.b64encode(data_bytes)
+    uid_base64 = urlsafe_base64_encode(bytes)
     
     context = {
         "token": new_account.token, 
-        "uid": new_account.id
+        "uid": uid_base64
     }
     
     html_message = render_to_string(template_name, context=context)

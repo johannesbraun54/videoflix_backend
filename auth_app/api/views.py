@@ -6,12 +6,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
-from .utils import create_username
-from authemail import wrapper
-from ..tasks import send_mail, send_new_signup_email
+from .utils import create_username, create_userprofile
+from ..tasks import send_new_signup_email
 import django_rq
 import uuid
 from ..models import Userprofile
+from django.utils.http import urlsafe_base64_decode
+
 
 
 
@@ -30,10 +31,6 @@ def check_email_availability(request):
             return Response({"exists": True}, status=status.HTTP_200_OK)
         else:
             return Response({"exists": False}, status=status.HTTP_200_OK)
-        
-def create_userprofile(new_profile, token):
-    userprofile = Userprofile.objects.create(user=new_profile, username=new_profile.username,email=new_profile.email, token=token)
-    return userprofile
     
 
 class RegistrationView(APIView):
@@ -62,6 +59,23 @@ class RegistrationView(APIView):
         else:
             data = serializer.errors
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+    
+class AccountActivationView(APIView):
+    
+    permission_classes = [AllowAny]
+    
+    def get(self, request, uidb64, token):
+        
+        uid_bytes = urlsafe_base64_decode(uidb64)
+        uid_str = uid_bytes.decode("utf-8")
+        print("uid_str",uid_str)
+        uid_int = int(uid_str)
+        user = User.objects.get(pk=uid_int)
+        if user.exists():
+            Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
+        else:
+            Response({"message": "Account activation failed."}, status=status.HTTP_400_BAD_REQUEST)          
+    
     
 
 class CookieTokenObtainPairView(TokenObtainPairView):
