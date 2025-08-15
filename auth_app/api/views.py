@@ -90,7 +90,14 @@ class CookieTokenObtainPairView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)           
         refresh = serializer.validated_data['refresh'] # token for refreshing
         access = serializer.validated_data['access'] # token for accessing protected resources
-        response = Response({"message":"login successful"}, status=status.HTTP_200_OK)
+        response =     Response({
+                            "detail": "Login successful",
+                            "user": {
+                                "id": serializer.user.id,
+                                "username": serializer.user.username
+                            }
+                            }, status=status.HTTP_200_OK)
+        
 
         response.set_cookie( 
             key='access_token',
@@ -108,15 +115,15 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             samesite='Lax',
         )
         
-        response.data = {
-            'message': 'Login successful',
-        }
-
         return response
+    
+    
+
     
 class CookieRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh_token')
+        
         if refresh_token is None:
             return Response({"detail":"Refresh token not found"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -127,7 +134,10 @@ class CookieRefreshView(TokenRefreshView):
             return Response({"detail":"Refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
         
         access_token = serializer.validated_data.get('access') # warum ist das so? weil der TokenRefreshView den access token aus dem refresh token generiert und wir ihn hier brauchen, um ihn in einem Cookie zu setzen.
-        response = Response({"message":"access token refreshed"}, status=status.HTTP_200_OK)
+        response = Response({
+                            "detail": "Token refreshed",
+                            "access": access_token
+                            }, status=status.HTTP_200_OK)
         
         response.set_cookie(
             key='access_token',
