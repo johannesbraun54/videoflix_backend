@@ -12,10 +12,9 @@ def send_new_signup_email(new_account):
     template_name = "signup_email.html" 
     verify_subject = "Verify your Videoflix account"
     
-    data = str(new_account.id)
-    data_bytes = data.encode("utf-8")
-    bytes = base64.b64encode(data_bytes)
-    uid_base64 = urlsafe_base64_encode(bytes)
+    data = str(new_account.user.id)  # "17"
+    data_bytes = data.encode("utf-8") # b'17'
+    uid_base64 = urlsafe_base64_encode(data_bytes)
     
     context = {
         "token": new_account.token, 

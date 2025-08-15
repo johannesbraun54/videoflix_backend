@@ -66,15 +66,17 @@ class AccountActivationView(APIView):
     
     def get(self, request, uidb64, token):
         
-        uid_bytes = urlsafe_base64_decode(uidb64)
+        uid_bytes = urlsafe_base64_decode(uidb64) 
         uid_str = uid_bytes.decode("utf-8")
-        print("uid_str",uid_str)
         uid_int = int(uid_str)
-        user = User.objects.get(pk=uid_int)
-        if user.exists():
-            Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
+        user = User.objects.filter(id=uid_int).first()
+            
+        if user:
+            user.is_active = True
+            user.save()
+            return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
         else:
-            Response({"message": "Account activation failed."}, status=status.HTTP_400_BAD_REQUEST)          
+            return Response({"message": "Account activation failed."}, status=status.HTTP_400_BAD_REQUEST)          
     
     
 
