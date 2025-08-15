@@ -44,6 +44,7 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             
             new_account = serializer.save()
+            new_account.is_active = False
             
             token = uuid.uuid4().hex
             
@@ -51,10 +52,11 @@ class RegistrationView(APIView):
             queue.enqueue(send_new_signup_email, create_userprofile(new_account, token))
             
            
-            data = {
+            data = { "user" :{
                 'id': new_account.id,
                 'email': new_account.email,
-            }
+            } ,
+               "token": token } 
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors
@@ -77,7 +79,6 @@ class AccountActivationView(APIView):
             return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
         else:
             return Response({"message": "Account activation failed."}, status=status.HTTP_400_BAD_REQUEST)          
-    
     
 
 class CookieTokenObtainPairView(TokenObtainPairView):

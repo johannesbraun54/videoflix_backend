@@ -38,6 +38,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.set_password(pw)
         account.save()
         return account
+    
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField()
@@ -58,7 +62,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("password or username wrong")
         
-        if not User.check_password(password):
+        if not user.check_password(password):
             raise serializers.ValidationError("password or username wrong")
         
         data = super().validate({"username": user.username, "password": password})
