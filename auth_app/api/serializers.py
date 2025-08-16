@@ -55,7 +55,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        user = User.objects.get(email=email)
         
         try:
             user = User.objects.get(email=email)

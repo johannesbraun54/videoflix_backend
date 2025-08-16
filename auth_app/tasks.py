@@ -1,24 +1,15 @@
-# from authemail import wrapper
-# from authemail.models import send_multi_format_email
-
-import base64
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from .models import Userprofile
-from django.utils.http import urlsafe_base64_encode
+from .utils import encode_user_id_to_base64
 
 def send_new_signup_email(new_account):
     template_name = "signup_email.html" 
     verify_subject = "Verify your Videoflix account"
     
-    data = str(new_account.user.id)  # "17"
-    data_bytes = data.encode("utf-8") # b'17'
-    uid_base64 = urlsafe_base64_encode(data_bytes)
-    
     context = {
         "token": new_account.token, 
-        "uid": uid_base64
+        "uid": encode_user_id_to_base64(new_account.user.id)
     }
     
     html_message = render_to_string(template_name, context=context)
@@ -33,44 +24,3 @@ def send_new_signup_email(new_account):
 
     message.attach_alternative(html_message, "text/html")
     message.send()
-
-
-### encode uid to base64
-
-# class SendVerifyMail(AbstractBaseCode):
-    
-#     def send_email(self, prefix):
-#         ctxt = {
-#             'email': self.user.email,
-#             'first_name': self.user.first_name,
-#             'last_name': self.user.last_name,
-#             'token': self.code,
-#             'uid': ''
-#         }
-        
-#         send_multi_format_email(prefix, ctxt, target_email=self.user.email)
-
-#         def __str__(self):
-#             return self.code
-        
-#         return super().send_email(prefix)
-
-# def send_mail(new_account_data):
-#     account = wrapper.Authemail()
-#     account.signup(email=new_account_data.email, password=new_account_data.password,
-#                            first_name="test", last_name="test")
-    
-# def send_email(self, prefix):
-#         ctxt = {
-#             'email': self.user.email,
-#             'first_name': self.user.first_name,
-#             'last_name': self.user.last_name,
-#             'code': self.code
-#         }
-#         send_multi_format_email(prefix, ctxt, target_email=self.user.email)
-
-    
-    # new_email = SendVerifyMail()
-    # new_email.send_email()
-    
-

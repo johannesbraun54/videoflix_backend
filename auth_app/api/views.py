@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
-from .utils import create_username, create_userprofile
+from ..utils import create_username, create_userprofile
 from ..tasks import send_new_signup_email
 import django_rq
 import uuid
@@ -37,7 +37,6 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # request.data._mutable = True
         request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
         
@@ -53,7 +52,7 @@ class RegistrationView(APIView):
             queue.enqueue(send_new_signup_email, create_userprofile(new_account, token))
             
            
-            data = { "user" :{
+            data = { "user" : {
                 'id': new_account.id,
                 'email': new_account.email,
             } ,
