@@ -31,21 +31,22 @@ def test_check_bad_request(client):
 
 @pytest.mark.django_db
 def test_registration(client):
-    url = reverse('registration')
+    url = reverse('register')
     register_data = {
         "email": "user@example.com",
         "password": "securepassword",
         "confirmed_password": "securepassword"
     }
-    response = client.post(url, register_data)
+    response = client.post(url, register_data,  content_type="application/json")
     assert response.status_code == 201
-    assert response.data['username'] == 'user'
+    print("response.data",response.data)
+    assert response.data['user']['email'] == 'user@example.com'
 
 @pytest.mark.django_db
 def test_bad_password(client):
-    url = reverse('registration')
+    url = reverse('register')
     bad_register_data = {}
-    response = client.post(url, bad_register_data)
+    response = client.post(url, bad_register_data, content_type="application/json")
     assert response.status_code == 400
     
 @pytest.mark.django_db    
