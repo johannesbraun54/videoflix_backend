@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'auth_app',
     'videoflix_app.apps.VideoflixAppConfig',
-    # 'authemail',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +67,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
+    # 'rest_framework.authtoken',
     'django_rq',
 ]
 
@@ -204,3 +204,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1NTU5NDAxMCwiaWF0IjoxNzU1NTA3NjEwLCJqdGkiOiJlMzA4MmNhMTBhZmU0MDllODRiMmVmODQ1ZThmNTYyMiIsInVzZXJfaWQiOjJ9.mRIjiyzGE9aHfK2PRYA6cFCGIWeglG7WSRIDOUZbfy8; Path=/; Secure; HttpOnly;
+#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU1NTA2ODg3LCJpYXQiOjE3NTU1MDUwODcsImp0aSI6IjdiNzRlNjA0NWI5NzRlNDVhOTVjZGMyMmE3ZjQ1MTBlIiwidXNlcl9pZCI6Mn0.erTn_KPUoSTptliOGFFVVZFpyJGyb4S_M2oFNTczhWU; Path=/; Secure; HttpOnly;

@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
+from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import create_username, create_userprofile
 from ..tasks import send_new_signup_email
 import django_rq
@@ -147,4 +148,21 @@ class CookieRefreshView(TokenRefreshView):
             samesite='Lax',
         )
         
+        return response
+    
+class LogoutView(APIView):
+    
+    permission_classes = []
+    
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+        
+        if refresh_token == None:
+            return Response({"detail": "No refresh token provided"}, status=400)
+        
+        refresh_token = RefreshToken(request.COOKIES.get('refresh_token'))
+        refresh_token.blacklist()
+        response =  Response({"detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."})
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
         return response

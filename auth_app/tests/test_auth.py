@@ -124,7 +124,6 @@ def test_login_wrong_password(client, token_obtain_pair_url, test_user):
     
 @pytest.mark.django_db        
 def test_account_activation(client, register_url, valid_register_data):
-    
     response = client.post(register_url, valid_register_data,  content_type="application/json")
     user_id = response.data['user']['id']
     token = response.data['token']    
@@ -136,7 +135,6 @@ def test_account_activation(client, register_url, valid_register_data):
 
 @pytest.mark.django_db        
 def test_account_activation_with_wrong_credentials(client): 
-    
     url = reverse('activate', kwargs={'uidb64': encode_user_id_to_base64(000),'token':"wrong_token123"})
     response = client.get(url)
     assert response.status_code == 400
@@ -146,7 +144,7 @@ def test_success_token_refresh(client, token_obtain_pair_url, test_user):
     login_data = {"email": "user@example.com", "password": "testpassword"}
     client.post(token_obtain_pair_url, login_data, content_type="application/json")
     
-    refresh_url = reverse("token_refresh")
+    refresh_url = reverse('token_refresh')
     response = client.post(refresh_url)
     
     assert response.status_code == 200
@@ -155,9 +153,26 @@ def test_success_token_refresh(client, token_obtain_pair_url, test_user):
     
 @pytest.mark.django_db        
 def test_refresh_token_not_found(client):
-    
-    refresh_url = reverse("token_refresh")
+    refresh_url = reverse('token_refresh')
     response = client.post(refresh_url)
     
     assert response.status_code == 400
     assert response.data == {"detail":"Refresh token not found"}
+
+@pytest.mark.django_db      
+def test_logout(client, token_obtain_pair_url, test_user):
+    login_data = {"email": "user@example.com", "password": "testpassword"}
+    client.post(token_obtain_pair_url, login_data, content_type="application/json")
+    
+    logout_url = reverse('logout')
+    response = client.post(logout_url)
+    assert response.status_code == 200
+    assert response.data == {"detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."}
+    
+    
+@pytest.mark.django_db      
+def test_logout_failed(client):
+    logout_url = reverse('logout')
+    response = client.post(logout_url)
+    assert response.status_code == 400
+    assert response.data == {"detail": "No refresh token provided"}
