@@ -1,12 +1,6 @@
 from django.urls import path
 from .views import RegistrationView, check_email_availability, CookieTokenObtainPairView, CookieRefreshView, AccountActivationView
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-
-
 urlpatterns = [
     path('login/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', CookieRefreshView.as_view(), name='token_refresh'),

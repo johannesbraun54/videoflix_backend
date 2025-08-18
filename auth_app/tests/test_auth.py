@@ -51,6 +51,8 @@ def test_registration_success(client, register_url, valid_register_data):
 
     assert response.status_code == 201
     assert response.data['user']['email'] == "user@example.com"
+    assert "id" in response.data['user'] 
+    assert "token" in response.data 
     
     
     
@@ -83,7 +85,7 @@ def token_obtain_pair_url():
 @pytest.fixture
 def test_user():
     return User.objects.create_user(
-        username='testuser',
+        username='user',
         email="user@example.com",
         password='testpassword'
     )
@@ -94,6 +96,14 @@ def test_login_success(client, token_obtain_pair_url, test_user):
     login_data = {"email": "user@example.com", "password": "testpassword"}
     response = client.post(token_obtain_pair_url, login_data, content_type="application/json")
     assert response.status_code == 200
+    assert response.data == {
+        "detail": "Login successful",
+        "user": {
+        "id": test_user.id,
+        "username": test_user.username
+    }
+}
+    
 
 
 @pytest.mark.django_db    
@@ -122,3 +132,32 @@ def test_account_activation(client, register_url, valid_register_data):
     url = reverse('activate', kwargs={'uidb64': encode_user_id_to_base64(user_id),'token':token})
     response = client.get(url)
     assert response.status_code == 200
+    assert response.data == {"message": "Account successfully activated."}
+
+@pytest.mark.django_db        
+def test_account_activation_with_wrong_credentials(client): 
+    
+    url = reverse('activate', kwargs={'uidb64': encode_user_id_to_base64(000),'token':"wrong_token123"})
+    response = client.get(url)
+    assert response.status_code == 400
+
+@pytest.mark.django_db        
+def test_success_token_refresh(client, token_obtain_pair_url, test_user):
+    login_data = {"email": "user@example.com", "password": "testpassword"}
+    client.post(token_obtain_pair_url, login_data, content_type="application/json")
+    
+    refresh_url = reverse("token_refresh")
+    response = client.post(refresh_url)
+    
+    assert response.status_code == 200
+    assert response.data['detail'] == "Token refreshed"
+    assert "access" in response.data
+    
+@pytest.mark.django_db        
+def test_refresh_token_not_found(client):
+    
+    refresh_url = reverse("token_refresh")
+    response = client.post(refresh_url)
+    
+    assert response.status_code == 400
+    assert response.data == {"detail":"Refresh token not found"}
