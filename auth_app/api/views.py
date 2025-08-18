@@ -7,8 +7,8 @@ from rest_framework.permissions import AllowAny
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..utils import create_username, create_userprofile
-from ..tasks import send_new_signup_email
+from ..utils import create_username, create_userprofile, decode_uidb64_to_int
+from ..tasks import send_new_signup_email, send_password_reset_email
 import django_rq
 import uuid
 from ..models import Userprofile
@@ -68,11 +68,7 @@ class AccountActivationView(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request, uidb64, token):
-        
-        uid_bytes = urlsafe_base64_decode(uidb64) 
-        uid_str = uid_bytes.decode("utf-8")
-        uid_int = int(uid_str)
-        user = User.objects.filter(id=uid_int).first()
+        user = User.objects.filter(id=decode_uidb64_to_int(uidb64)).first()
             
         if user:
             user.is_active = True
@@ -166,3 +162,30 @@ class LogoutView(APIView):
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
         return response
+    
+class PasswordResetView(APIView):
+    
+    permission_classes = [AllowAny]
+    
+    def post(self, request,  *args, **kwargs):
+        email = request.data['email']
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            token = uuid.uuid4().hex
+            queue = django_rq.get_queue("default", autocommit=True)
+            queue.enqueue(send_password_reset_email, user, token)
+            return Response({"detail": "An email has been sent to reset your password."}, status=200)
+        return Response({"detail": "not existing user"} ,status=400)
+    
+class ConfirmPasswordView(APIView):
+    
+    permission_classes = [AllowAny]
+    
+    def post(self, request, uidb64, token):
+        user = User.objects.filter(id=decode_uidb64_to_int(uidb64)).first()
+        
+        if user:
+            new_password = request.data["new_password"]
+            user.set_password(new_password)
+            return Response({"detail": "Your Password has been successfully reset."})
