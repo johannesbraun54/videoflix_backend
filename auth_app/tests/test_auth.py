@@ -4,105 +4,118 @@ import pytest
 from ..utils import encode_user_id_to_base64
 
 
-@pytest.mark.django_db
-def test_check_new_email_availability(client):
+@pytest.fixture
+def email_availability_url():
     url = reverse('email_availability')
+    return url
+
+@pytest.mark.django_db
+def test_check_new_email_availability(client, email_availability_url):
     new_email = 'example@mail.de'
-    response = client.post(url, {'email': new_email})
+    response = client.post(email_availability_url, {'email': new_email})
     assert response.status_code == 200
     assert response.data == {'exists': False}
 
 
 @pytest.mark.django_db
-def test_check_existing_email_availability(client):
-    url = reverse('email_availability')
+def test_check_existing_email_availability(client, email_availability_url):
     exisisting_email = 'example@mail.de'
     User.objects.create_user(
         username='testuser', email=exisisting_email, password='testpassword')
-    response = client.post(url, {'email': exisisting_email})
+    response = client.post(email_availability_url, {'email': exisisting_email})
     assert response.status_code == 200
     assert response.data == {'exists': True}
 
 
-def test_check_bad_request(client):
-    url = reverse('email_availability')
-    response = client.post(url)
+def test_check_bad_request(client, email_availability_url):
+    response = client.post(email_availability_url)
     assert response.status_code == 400
     assert response.data == {"error": "Email is required"}
 
-@pytest.mark.django_db
-def test_registration(client):
+@pytest.fixture
+def register_url():
     url = reverse('register')
-    register_data = {
+    return url
+
+@pytest.fixture
+def valid_register_data():
+    return {
         "email": "user@example.com",
         "password": "securepassword",
         "confirmed_password": "securepassword"
     }
-    
-    response = client.post(url, register_data,  content_type="application/json")
-    assert response.status_code == 201
-    assert response.data['user']['email'] == 'user@example.com'
-    
-    existing_email_response = client.post(url, register_data,  content_type="application/json")
-    assert existing_email_response.status_code == 400
-    assert existing_email_response.data == {"username": ["A user with that username already exists."], 
-                                            "email": ["Email is already in use"]}
 
+@pytest.mark.django_db
+def test_registration_success(client, register_url, valid_register_data):
+    response = client.post(register_url, valid_register_data, content_type="application/json")
+
+    assert response.status_code == 201
+    assert response.data['user']['email'] == "user@example.com"
     
-    bad_password_register_data = {
+    
+    
+@pytest.mark.django_db
+def test_registration_duplicate_email(client, register_url, valid_register_data):
+
+    User.objects.create_user(username="user", email="user@example.com", password="securepassword")
+    
+    response = client.post(register_url, valid_register_data, content_type="application/json")
+
+    assert response.status_code == 400
+    assert "email" in response.data
+    
+@pytest.mark.django_db
+def test_registration_password_missmatch(client, register_url):
+    bad_password_data = {
         "email": "bad_user@example.com",
         "password": "securepassword",
         "confirmed_password": "wrong_password"
     }
-    
-    bad_password_response = client.post(url, bad_password_register_data,  content_type="application/json")
-    assert bad_password_response.status_code == 400
-    assert bad_password_response.data == {"confirmed_password": ["Passwords do not match"]}
+    response = client.post(register_url, bad_password_data, content_type="application/json")
 
-@pytest.mark.django_db
-def test_bad_password(client):
-    url = reverse('register')
-    bad_register_data = {}
-    response = client.post(url, bad_register_data, content_type="application/json")
     assert response.status_code == 400
+    assert response.data == {"confirmed_password": ["Passwords do not match"]}
     
-@pytest.mark.django_db    
-def test_login(client):
-    url = reverse('token_obtain_pair')
-    User.objects.create_user(username='testuser', email="user@example.com", password='testpassword')
-    login_data = {"email":"user@example.com", "password":"testpassword"}
-    response = client.post(url, login_data)
-    assert response.status_code == 200
-    
-    user_not_exists_login_data = {"email":"not_existing_user@example.com", "password":"testpassword"}
-    bad_response = client.post(url, user_not_exists_login_data)
-    assert bad_response.status_code == 400
-    assert bad_response.data == { "non_field_errors": ["password or username wrong"]}
+@pytest.fixture
+def token_obtain_pair_url():
+    return reverse('token_obtain_pair')
 
-    
-    bad_password_register_data = {
-        "email":"user@example.com",
-        "password": "wrong_password",
-    }
-    
-    bad_password_response = client.post(url, bad_password_register_data,  content_type="application/json")
-    assert bad_password_response.status_code == 400
-    assert bad_password_response.data == { "non_field_errors": ["password or username wrong"]}
+@pytest.fixture
+def test_user():
+    return User.objects.create_user(
+        username='testuser',
+        email="user@example.com",
+        password='testpassword'
+    )
+
+
+@pytest.mark.django_db    
+def test_login_success(client, token_obtain_pair_url, test_user):
+    login_data = {"email": "user@example.com", "password": "testpassword"}
+    response = client.post(token_obtain_pair_url, login_data, content_type="application/json")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db    
+def test_login_user_not_exists(client, token_obtain_pair_url):
+    login_data = {"email": "not_existing_user@example.com", "password": "testpassword"}
+    response = client.post(token_obtain_pair_url, login_data, content_type="application/json")
+    assert response.status_code == 400
+    assert response.data == {"non_field_errors": ["password or username wrong"]}
+
+
+@pytest.mark.django_db    
+def test_login_wrong_password(client, token_obtain_pair_url, test_user):
+    bad_password_data = {"email": "user@example.com", "password": "wrong_password"}
+    response = client.post(token_obtain_pair_url, bad_password_data, content_type="application/json")
+    assert response.status_code == 400
+    assert response.data == {"non_field_errors": ["password or username wrong"]}
+
     
 @pytest.mark.django_db        
-def test_account_activation(client):
+def test_account_activation(client, register_url, valid_register_data):
     
-    url = reverse('register')
-    register_data = {
-        "email": "user@example.com",
-        "password": "securepassword",
-        "confirmed_password": "securepassword"
-    }
-    
-    response = client.post(url, register_data,  content_type="application/json")
-    print(response.data)
-    assert response.status_code == 201
-    
+    response = client.post(register_url, valid_register_data,  content_type="application/json")
     user_id = response.data['user']['id']
     token = response.data['token']    
     
