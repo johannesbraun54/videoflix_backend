@@ -8,6 +8,7 @@ class Userprofile(models.Model):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField()
     token = models.CharField(max_length=150, unique=True) # sinnvoll ? 
+    is_verified = models.BooleanField(default=False)
 
 
 class PasswordResetToken(models.Model):

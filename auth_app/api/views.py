@@ -45,8 +45,6 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             
             new_account = serializer.save()
-            new_account.is_active = False
-            
             token = uuid.uuid4().hex
             
             queue = django_rq.get_queue("default", autocommit=True)
@@ -71,7 +69,8 @@ class AccountActivationView(APIView):
         user = User.objects.filter(id=decode_uidb64_to_int(uidb64)).first()
             
         if user:
-            user.is_active = True
+            user.userprofile.is_verified = True
+            user.userprofile.save()
             user.save()
             return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
         else:
@@ -85,8 +84,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)           
-        refresh = serializer.validated_data['refresh'] # token for refreshing
-        access = serializer.validated_data['access'] # token for accessing protected resources
+        refresh = serializer.validated_data['refresh'] 
+        access = serializer.validated_data['access'] 
         response =     Response({
                             "detail": "Login successful",
                             "user": {

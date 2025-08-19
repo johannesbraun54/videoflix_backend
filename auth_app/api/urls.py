@@ -10,6 +10,5 @@ urlpatterns = [
     path('token/refresh/', CookieRefreshView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'), 
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
-    # path('password_reset/', DjangoPasswordResetView.as_view(), name='password_reset'),
     path('password_confirm/<uidb64>/<token>/', ConfirmPasswordView.as_view(), name='password_confirm'),
 ]

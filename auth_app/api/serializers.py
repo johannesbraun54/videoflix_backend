@@ -64,9 +64,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not user.check_password(password):
             raise serializers.ValidationError("password or username wrong")
         
-        self.user = user 
-
+        if not user.userprofile.is_verified:
+            raise serializers.ValidationError("password or username wrong")
         
+        self.user = user 
         data = super().validate({"username": user.username, "password": password})
         return data 
         
