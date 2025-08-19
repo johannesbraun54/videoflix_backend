@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 import pytest
 from ..utils import encode_user_id_to_base64
+from ..models import PasswordResetToken
 
 
 @pytest.fixture
@@ -194,10 +195,18 @@ def test_failed_reset_password(client):
     assert response.data == {"detail": "not existing user"}
     
 @pytest.mark.django_db              
-def test_confirm_password(client):
-    # confirm_url = reverse("password_confirm",kwargs={'uidb64': encode_user_id_to_base64(user_id),'token':token})
-
+def test_confirm_password(client, test_user):
+    reset_url = reverse("password_reset")
+    email_for_reset = {"email": test_user.email}
+    client.post(reset_url, email_for_reset, content_type="application/json")
+    
+    token = PasswordResetToken.objects.filter(user_id=test_user.id).first()
+    confirm_url = reverse("password_confirm",kwargs={'uidb64': encode_user_id_to_base64(test_user.id),'token':token.key})
     data = {
                 "new_password": "newsecurepassword",
                 "confirm_password": "newsecurepassword"
             }
+    
+    response = client.post(confirm_url, data)
+    assert response.status_code == 200 
+    assert response.data == {"detail": "Your Password has been successfully reset."}

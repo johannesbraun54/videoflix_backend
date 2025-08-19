@@ -24,3 +24,11 @@ def decode_uidb64_to_int(uidb64):
     uid_str = uid_bytes.decode("utf-8")
     uid_int = int(uid_str)
     return uid_int
+
+def token_is_valid(reset_token):
+    if not reset_token:
+        return False
+    if reset_token.is_expired:
+        reset_token.delete()
+        return False
+    return True

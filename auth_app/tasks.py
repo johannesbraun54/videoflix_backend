@@ -26,13 +26,13 @@ def send_new_signup_email(new_account):
     message.send()
     
     
-def send_password_reset_email(user, token):
+def send_password_reset_email(reset_token):
     template_name = "reset_password.html" 
     verify_subject = "Reset your Password"
     
     context = {
-        "token": token,
-         "uid": encode_user_id_to_base64(user.id)
+        "token": reset_token.key,
+         "uid": encode_user_id_to_base64(reset_token.user.id)
     }
     
     html_message = render_to_string(template_name, context=context)
@@ -42,7 +42,7 @@ def send_password_reset_email(user, token):
         subject = verify_subject, 
         body = plain_message,
         from_email = None,
-        to= [user.email]
+        to= [reset_token.user.email]
     )
 
     message.attach_alternative(html_message, "text/html")

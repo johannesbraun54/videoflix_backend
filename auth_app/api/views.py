@@ -7,11 +7,11 @@ from rest_framework.permissions import AllowAny
 from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..utils import create_username, create_userprofile, decode_uidb64_to_int
+from ..utils import create_username, create_userprofile, decode_uidb64_to_int, token_is_valid
 from ..tasks import send_new_signup_email, send_password_reset_email
 import django_rq
 import uuid
-from ..models import Userprofile
+from ..models import PasswordResetToken
 from django.utils.http import urlsafe_base64_decode
 
 
@@ -168,13 +168,17 @@ class PasswordResetView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request,  *args, **kwargs):
-        email = request.data['email']
+        email = request.data.get('email')
+        if not email:
+            return Response({"detail": "Email is required"}, status=400)
         user = User.objects.filter(email=email).first()
 
-        if user:
-            token = uuid.uuid4().hex
+        if user and user.is_active:
+            PasswordResetToken.objects.filter(user_id=user.id).delete()
+            token =  PasswordResetToken.objects.create(key=uuid.uuid4().hex, user=user)
+            
             queue = django_rq.get_queue("default", autocommit=True)
-            queue.enqueue(send_password_reset_email, user, token)
+            queue.enqueue(send_password_reset_email, token)
             return Response({"detail": "An email has been sent to reset your password."}, status=200)
         return Response({"detail": "not existing user"} ,status=400)
     
@@ -183,9 +187,16 @@ class ConfirmPasswordView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request, uidb64, token):
+        reset_token = PasswordResetToken.objects.filter(key=token).first()
         user = User.objects.filter(id=decode_uidb64_to_int(uidb64)).first()
         
-        if user:
-            new_password = request.data["new_password"]
-            user.set_password(new_password)
-            return Response({"detail": "Your Password has been successfully reset."})
+        if token_is_valid(reset_token) and user:
+            if user == reset_token.user:
+                new_password = request.data["new_password"]
+                user.set_password(new_password)
+                user.save()
+                reset_token.delete()
+                return Response({"detail": "Your Password has been successfully reset."}, status=200)
+        return Response({"detail": "error occured"}, status=400)
+
+        
