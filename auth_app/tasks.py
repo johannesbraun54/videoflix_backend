@@ -3,13 +3,13 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .utils import encode_user_id_to_base64
 
-def send_new_signup_email(new_account):
+def send_new_signup_email(activation_token):
     template_name = "signup_email.html" 
     verify_subject = "Verify your Videoflix account"
     
     context = {
-        "token": new_account.token, 
-        "uid": encode_user_id_to_base64(new_account.user.id)
+        "token": activation_token.key, 
+        "uid": encode_user_id_to_base64(activation_token.user.id)
     }
     
     html_message = render_to_string(template_name, context=context)
@@ -19,7 +19,7 @@ def send_new_signup_email(new_account):
         subject = verify_subject, 
         body = plain_message,
         from_email = None ,
-        to= [new_account.email]
+        to= [activation_token.user.email]
     )
 
     message.attach_alternative(html_message, "text/html")

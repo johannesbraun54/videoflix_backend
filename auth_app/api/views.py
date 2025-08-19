@@ -11,13 +11,7 @@ from ..utils import create_username, create_userprofile, decode_uidb64_to_int, t
 from ..tasks import send_new_signup_email, send_password_reset_email
 import django_rq
 import uuid
-from ..models import PasswordResetToken
-from django.utils.http import urlsafe_base64_decode
-
-
-
-
-
+from ..models import PasswordResetToken, AccountActivationToken
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -40,22 +34,22 @@ class RegistrationView(APIView):
     def post(self, request):
         request.data['username'] = create_username(request.data.get('email', None))
         serializer = RegistrationSerializer(data=request.data)
-        
         data = {}
+        
         if serializer.is_valid():
             
             new_account = serializer.save()
-            token = uuid.uuid4().hex
-            
+            token = AccountActivationToken.objects.create(key=uuid.uuid4().hex, user=new_account)
             queue = django_rq.get_queue("default", autocommit=True)
-            queue.enqueue(send_new_signup_email, create_userprofile(new_account, token))
+            create_userprofile(new_account)
+            queue.enqueue(send_new_signup_email, token)
             
            
             data = { "user" : {
                 'id': new_account.id,
                 'email': new_account.email,
             } ,
-               "token": token } 
+               "token": token.key } 
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = serializer.errors
@@ -66,13 +60,16 @@ class AccountActivationView(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request, uidb64, token):
+        activation_token = AccountActivationToken.objects.filter(key=token).first()
         user = User.objects.filter(id=decode_uidb64_to_int(uidb64)).first()
-            
-        if user:
-            user.userprofile.is_verified = True
-            user.userprofile.save()
-            user.save()
-            return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
+        
+        if token_is_valid(activation_token):
+            if user == activation_token.user:
+                user.userprofile.is_verified = True
+                user.userprofile.save()
+                user.save()
+                activation_token.delete()
+                return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)            
         else:
             return Response({"message": "Account activation failed."}, status=status.HTTP_400_BAD_REQUEST)          
     

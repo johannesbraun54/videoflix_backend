@@ -9,8 +9,8 @@ def create_username(email):
         return username
     return email
 
-def create_userprofile(new_profile, token):
-    userprofile = Userprofile.objects.create(user=new_profile, username=new_profile.username,email=new_profile.email, token=token)
+def create_userprofile(new_account):
+    userprofile = Userprofile.objects.create(user=new_account, username=new_account.username, email=new_account.email)
     return userprofile
 
 def encode_user_id_to_base64(user_id):

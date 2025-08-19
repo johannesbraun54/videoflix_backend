@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth.models import User
+from ..models import Userprofile
 import pytest
 from ..utils import encode_user_id_to_base64
 from ..models import PasswordResetToken
@@ -90,23 +91,31 @@ def test_user():
         email="user@example.com",
         password='testpassword'
     )
+    
+@pytest.fixture
+def test_userprofile(test_user):
+    return Userprofile.objects.create(
+        user=test_user,
+        username=test_user.username,
+        email=test_user.email,
+        is_verified=True
+    )
 
 
 @pytest.mark.django_db    
-def test_login_success(client, token_obtain_pair_url, test_user):
+def test_login_success(client, token_obtain_pair_url, test_userprofile):
+    
     login_data = {"email": "user@example.com", "password": "testpassword"}
     response = client.post(token_obtain_pair_url, login_data, content_type="application/json")
     assert response.status_code == 200
     assert response.data == {
         "detail": "Login successful",
         "user": {
-        "id": test_user.id,
-        "username": test_user.username
+        "id": test_userprofile.user.id,
+        "username": test_userprofile.username
     }
 }
     
-
-
 @pytest.mark.django_db    
 def test_login_user_not_exists(client, token_obtain_pair_url):
     login_data = {"email": "not_existing_user@example.com", "password": "testpassword"}
@@ -141,7 +150,8 @@ def test_account_activation_with_wrong_credentials(client):
     assert response.status_code == 400
 
 @pytest.mark.django_db        
-def test_success_token_refresh(client, token_obtain_pair_url, test_user):
+def test_success_token_refresh(client, token_obtain_pair_url, test_userprofile):
+    
     login_data = {"email": "user@example.com", "password": "testpassword"}
     client.post(token_obtain_pair_url, login_data, content_type="application/json")
     
@@ -161,7 +171,7 @@ def test_refresh_token_not_found(client):
     assert response.data == {"detail":"Refresh token not found"}
 
 @pytest.mark.django_db      
-def test_logout(client, token_obtain_pair_url, test_user):
+def test_logout(client, token_obtain_pair_url, test_userprofile):    
     login_data = {"email": "user@example.com", "password": "testpassword"}
     client.post(token_obtain_pair_url, login_data, content_type="application/json")
     
