@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-# from ..models import VideoflixUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
@@ -12,7 +11,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ( 'id', 'username', 'email', 'password', 'confirmed_password')
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True,
+                            'min_length': 8}
         }
         
     def validate_confirmed_password(self, value):
@@ -39,7 +39,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.save()
         return account
     
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 

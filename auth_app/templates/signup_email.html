@@ -1,15 +1,87 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Thank you for signing up!</title>
+  <meta charset="UTF-8">
+  <title>Videoflix - Account Activation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo img {
+      max-width: 180px;
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    a {
+      color: #4a3aff;
+      text-decoration: none;
+    }
+    .button {
+      display: inline-block;
+      margin: 25px 0;
+      padding: 14px 28px;
+      background-color: #2b39ff;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .footer {
+      font-size: 13px;
+      color: #777777;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-<p>
-Hi, Verify your email address by clicking on this link:<br>
-<a href="http://127.0.0.1:5500/pages/auth/activate.html?uid={{uid}}&token={{token}}">http://127.0.0.1:5500/pages/auth/activate.html?uid={{uid}}&token={{token}}</a>
-<br>(override version)
-</p>
+  <div class="container">
+    <!-- Logo -->
+    <div class="logo">
+      <img src="http://127.0.0.1:8000/static/auth_app/assets/Capa_1.png" alt="Videoflix Logo">
+    </div>
+
+    <!-- Content -->
+    <p>Dear {{ username }},</p>
+    <p>
+      Thank you for registering with <a href="https://videoflix.com">Videoflix</a>. 
+      To complete your registration and verify your email address, please click the link below:
+    </p>
+
+    <!-- CTA Button -->
+    <p>
+        <a href="http://127.0.0.1:5500/pages/auth/activate.html?uid={{ uid }}&token={{ token }}" class="button">Activate account</a>
+    </p>
+
+    <p>
+      If you did not create an account with us, please disregard this email.
+    </p>
+
+    <p>Best regards,</p>
+    <p>Your Videoflix Team.</p>
+
+    <!-- Footer -->
+    <div class="footer">
+      &copy; 2025 Videoflix. All rights reserved.
+    </div>
+  </div>
 </body>
 </html>
-

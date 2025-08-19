@@ -8,7 +8,7 @@ from .serializers import CustomTokenObtainPairSerializer, RegistrationSerializer
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import create_username, create_userprofile, decode_uidb64_to_int, token_is_valid
-from ..tasks import send_new_signup_email, send_password_reset_email
+from ..tasks import send_email
 import django_rq
 import uuid
 from ..models import PasswordResetToken, AccountActivationToken
@@ -42,7 +42,7 @@ class RegistrationView(APIView):
             token = AccountActivationToken.objects.create(key=uuid.uuid4().hex, user=new_account)
             queue = django_rq.get_queue("default", autocommit=True)
             create_userprofile(new_account)
-            queue.enqueue(send_new_signup_email, token)
+            queue.enqueue(send_email, token, "signup_email.html" , "Verify your Videoflix account")
             
            
             data = { "user" : {
@@ -172,9 +172,9 @@ class PasswordResetView(APIView):
         if user and user.is_active:
             PasswordResetToken.objects.filter(user_id=user.id).delete()
             token =  PasswordResetToken.objects.create(key=uuid.uuid4().hex, user=user)
-            
             queue = django_rq.get_queue("default", autocommit=True)
-            queue.enqueue(send_password_reset_email, token)
+            queue.enqueue(send_email, token, "reset_password.html", "Reset your Password")
+            
             return Response({"detail": "An email has been sent to reset your password."}, status=200)
         return Response({"detail": "not existing user"} ,status=400)
     
