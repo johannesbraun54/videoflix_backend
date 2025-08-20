@@ -8,7 +8,6 @@ from rest_framework.permissions import AllowAny
 from ..models import Video
 
 class VideosListView(generics.ListAPIView):
-    permission_classes = [AllowAny]
     queryset = Video.objects.all()
     serializer_class = VideoUploadSerializer
 
