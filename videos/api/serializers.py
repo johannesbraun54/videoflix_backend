@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from videoflix_app.models import Video
+from videos.models import Video
 
 class VideoUploadSerializer(serializers.ModelSerializer):
     
