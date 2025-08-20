@@ -42,7 +42,7 @@ class RegistrationView(APIView):
     def post(self, request):
         request.data["username"] = create_username(request.data.get("email", None))
         serializer = RegistrationSerializer(data=request.data)
-        data = {}
+        # data = {}
 
         if serializer.is_valid():
 
@@ -118,7 +118,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             key="access_token",
             value=access,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite="Lax",
         )
 
@@ -126,7 +126,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             key="refresh_token",
             value=refresh,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite="Lax",
         )
 
@@ -145,7 +145,7 @@ class CookieRefreshView(TokenRefreshView):
 
         serializer = self.get_serializer(
             data={"refresh": refresh_token}
-        )  # warum so? weil der TokenRefreshView erwartet, dass die Daten in einem bestimmten Format sind, und wir hier den refresh token aus den Cookies holen müssen.
+        )
         try:
             serializer.is_valid(raise_exception=True)
         except:
@@ -155,7 +155,7 @@ class CookieRefreshView(TokenRefreshView):
 
         access_token = serializer.validated_data.get(
             "access"
-        )  # warum ist das so? weil der TokenRefreshView den access token aus dem refresh token generiert und wir ihn hier brauchen, um ihn in einem Cookie zu setzen.
+        )  
         response = Response(
             {"detail": "Token refreshed", "access": access_token},
             status=status.HTTP_200_OK,
