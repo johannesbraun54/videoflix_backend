@@ -29,6 +29,10 @@ def test_userprofile(test_user):
 def test_get_video_list(client, token_obtain_pair_url, test_userprofile):
     login_data = {"email": test_userprofile.email, "password": "testpassword"}
     response = client.post(token_obtain_pair_url, login_data, content_type="application/json")
-    url = reverse("videos")
+    url = reverse("video")
     response = client.get(url)
     assert response.status_code == 200
+
+def test_get_single_video(client):
+    url = reverse("")
+

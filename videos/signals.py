@@ -1,17 +1,19 @@
+from datetime import timedelta
 from .models import Video
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
-from .tasks import convert_480p, generate_thumbnail
+from .tasks import generate_thumbnail, convert_video_into_hls
 import os
 import django_rq
 from django.conf import settings
+
 
 
 @receiver(post_save, sender=Video)
 def video_post_safe(sender, instance, created, **kwargs):
     if created:
         queue = django_rq.get_queue("default", autocommit=True)
-        queue.enqueue(convert_480p, instance.file.path)
+        queue.enqueue(convert_video_into_hls, instance.file.path, instance.id)
         queue.enqueue(generate_thumbnail, instance.id)
     
     

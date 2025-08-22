@@ -3,11 +3,22 @@ import os
 import subprocess
 from django.conf import settings
 from .models import Video
+import subprocess
 
-def convert_480p(source):
-    new_file_name = source[:-4] + "_480p.mp4"
-    cmd = 'ffmpeg -i "{}" -s hd480 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, new_file_name)
-    subprocess.run(cmd,shell=True)
+# def convert_480p(source):
+#     new_file_name = source[:-4] + "_480p.mp4"
+#     cmd = 'ffmpeg -i "{}" -s hd480 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, new_file_name)
+#     subprocess.run(cmd,shell=True)
+    
+# def convert_720p(source):
+#     new_file_name = source[:-4] + "_720p.mp4"
+#     cmd = 'ffmpeg -i "{}" -s hd720 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, new_file_name)
+#     subprocess.run(cmd,shell=True)
+    
+# def convert_1080p(source):
+#     new_file_name = source[:-4] + "_1080p.mp4"
+#     cmd = 'ffmpeg -i "{}" -s hd1080 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, new_file_name)
+#     subprocess.run(cmd,shell=True)
     
     
 
@@ -19,19 +30,50 @@ def generate_thumbnail(video_id):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{video.id}.jpg") 
 
-    command = [
-        "ffmpeg",                   # Aufruf von ffmpeg (Videoverarbeitungsprogramm)
-        "-ss", "00:00:05.000",      # Springe zu 5 Sekunden im Video
-        "-i", input_path,           # Eingabevideo (Pfad zur Videodatei)
-        "-vframes", "1",            # Erzeuge genau 1 Einzelbild
-        "-q:v", "2",                # Bildqualität (2 = sehr gut, kleiner = besser)
-        output_path,                # Ausgabepfad für das Thumbnail
-        "-update", "1",         # wichtig für Docker: überschreibt existierende Datei
+    cmd = [
+        "ffmpeg",                  
+        "-ss", "00:00:05.000",    
+        "-i", input_path,
+        "-vframes", "1",            
+        "-q:v", "2",                
+        output_path,               
+        "-update", "1",       
     ]
 
+    subprocess.run(cmd, check=True)
 
-    subprocess.run(command, check=True)
-
-    # Pfad im Model speichern
     video.thumbnail_url = f"http://127.0.0.1:8000/media/thumbnails/{video.id}.jpg"
     video.save()
+    
+def convert_video_into_specific_resolution(resolution, scale, input_file, video_id):
+    output_dir = os.path.join(settings.MEDIA_ROOT, "videos", str(video_id), resolution)
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, "index.m3u8")
+
+    cmd = [
+        "ffmpeg",
+        "-i", input_file,
+        "-vf", f"scale={scale}",
+        "-c:v", "h264",       # Video-Codec
+        "-c:a", "aac",        # Audio-Codec
+        "-f", "hls",          # Ausgabeformat
+        "-hls_time", "10",    # Segmentlänge 10 Sekunden
+        "-hls_playlist_type", "vod",  # VoD-Playlist
+        output_file
+    ]
+    
+    subprocess.run(cmd, check=True)
+    
+    
+def convert_video_into_hls(input_file, video_id):
+    
+    RESOLUTION_MAP = {
+        "480p": "854:480",
+        "720p": "1280:720",
+        "1080p": "1920:1080",
+    }    
+
+    for resolution, scale in RESOLUTION_MAP.items():
+        convert_video_into_specific_resolution(resolution, scale, input_file, video_id)
+        
+    return True
