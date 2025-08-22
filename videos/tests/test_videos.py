@@ -33,6 +33,8 @@ def test_get_video_list(client, token_obtain_pair_url, test_userprofile):
     response = client.get(url)
     assert response.status_code == 200
 
-def test_get_single_video(client):
-    url = reverse("")
+# @pytest.mark.django_db
+# def test_get_single_video(client):
+#     login_data = {"email": test_userprofile.email, "password": "testpassword"}
+#     url = reverse("video-detail", kwargs={"movie_id":1, "resolution":"480p"})
 
