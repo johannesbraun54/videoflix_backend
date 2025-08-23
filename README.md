@@ -68,6 +68,16 @@ cd videoflix_backend
 cp .env.template .env
 # Bearbeite .env: SECRET_KEY, DATABASE_URL, REDIS_URL, ALLOWED_HOSTS etc.
 
+#create a virtual environment
+python3 -m venv env
+
+# venv aktivieren
+source env/bin/activate
+
+# dependencies installieren
+pip3 install -r requirements.txt 
+
+
 docker-compose up --build
 # Danach
 docker-compose exec web python manage.py migrate

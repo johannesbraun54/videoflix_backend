@@ -46,8 +46,8 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
-EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='johannesbraun02@gmail.com')
-EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='johannesbraun02@gmail.com')
+EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='mail@example.com')
+EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='mail@example.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
 EMAIL_USE_SSL = False
 

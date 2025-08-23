@@ -37,6 +37,7 @@ def check_email_availability(request):
 
 
 class RegistrationView(APIView):
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -70,7 +71,7 @@ class RegistrationView(APIView):
 
 
 class AccountActivationView(APIView):
-
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
@@ -95,7 +96,9 @@ class AccountActivationView(APIView):
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
-
+    
+    authentication_classes = []
+    permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
@@ -134,6 +137,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieRefreshView(TokenRefreshView):
+    
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -174,8 +178,6 @@ class CookieRefreshView(TokenRefreshView):
 
 class LogoutView(APIView):
 
-    permission_classes = []
-
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -195,7 +197,8 @@ class LogoutView(APIView):
 
 
 class PasswordResetView(APIView):
-
+    
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -219,7 +222,8 @@ class PasswordResetView(APIView):
 
 
 class ConfirmPasswordView(APIView):
-
+    
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
