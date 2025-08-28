@@ -35,9 +35,12 @@ DEBUG = True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
+   	'http://127.0.0.1:5500',
+    	'http://localhost:5500',
+	'videoflix-backend.jb-webdevelopment.com',
+	'34.1.166.178'
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 
