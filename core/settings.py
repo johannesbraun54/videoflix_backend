@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='django-secret-key-123-asd-456-fgh'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
