@@ -30,12 +30,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='django-secret-key-123-asd-456-fgh'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 CORS_ALLOWED_ORIGINS = [
-	'https://videoflix.jb-webdevelopment.com'
+	'https://videoflix.jb-webdevelopment.com',
+	'https://videoflix-backend.jb-webdevelopment.com'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -46,9 +47,9 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
 EMAIL_USE_SSL = True
-
 AUTH_EMAIL_VERIFICATION = True
 
 # Application definition
