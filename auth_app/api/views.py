@@ -122,7 +122,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             value=access,
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+	    domain=".jb-webdevelopment.com"
         )
 
         response.set_cookie(
@@ -130,7 +131,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             value=refresh,
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+	    domain=".jb-webdevelopment.com"
         )
 
         return response
@@ -170,7 +172,8 @@ class CookieRefreshView(TokenRefreshView):
             value=access_token,
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".jb-webdevelopment.com"
         )
 
         return response

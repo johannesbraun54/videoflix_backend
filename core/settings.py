@@ -35,10 +35,7 @@ DEBUG = False
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 CORS_ALLOWED_ORIGINS = [
-   	'http://127.0.0.1:5500',
-    	'http://localhost:5500',
-	'https://videoflix-backend.jb-webdevelopment.com',
-    	'http://34.1.166.178'
+	'https://videoflix.jb-webdevelopment.com'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -46,13 +43,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST') 
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
+EMAIL_USE_TLS = False
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
-EMAIL_FROM = os.getenv('DEFAULT_FROM_EMAIL', default='mail@example.com')
-EMAIL_BCC = os.getenv('DEFAULT_FROM_EMAIL', default='mail@example.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
-EMAIL_USE_SSL = False
+EMAIL_USE_SSL = True
 
 AUTH_EMAIL_VERIFICATION = True
 
