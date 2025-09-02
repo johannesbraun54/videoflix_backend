@@ -25,7 +25,7 @@ def generate_thumbnail(video_id):
 
     subprocess.run(cmd, check=True)
 
-    video.thumbnail_url = f"http://127.0.0.1:8000/media/thumbnails/{video.id}.jpg"
+    video.thumbnail_url = f"https://videoflix-backend.jb-webdevelopment.com/media/thumbnails/{video.id}.jpg"
     video.save()
     
 def convert_video_into_specific_resolution(resolution, scale, input_file, video_id):
