@@ -194,8 +194,17 @@ class LogoutView(APIView):
                 "detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."
             }
         )
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
+        response.delete_cookie(
+            key="access_token",
+            domain=".jb-webdevelopment.com",
+            path="/"
+        )
+        response.delete_cookie(
+            key="refresh_token",
+            domain=".jb-webdevelopment.com",
+            path="/"
+        )
+
         return response
 
 
