@@ -197,12 +197,10 @@ class LogoutView(APIView):
         response.delete_cookie(
             key="access_token",
             domain=".jb-webdevelopment.com",
-            path="/"
         )
         response.delete_cookie(
             key="refresh_token",
             domain=".jb-webdevelopment.com",
-            path="/"
         )
 
         return response
