@@ -122,7 +122,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="None",
-	    domain=".jb-webdevelopment.com"
+	        domain=".jb-webdevelopment.com"
         )
 
         response.set_cookie(
@@ -131,7 +131,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="None",
-	    domain=".jb-webdevelopment.com"
+	        domain=".jb-webdevelopment.com"
         )
 
         return response
