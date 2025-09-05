@@ -43,7 +43,6 @@ class RegistrationView(APIView):
     def post(self, request):
         request.data["username"] = create_username(request.data.get("email", None))
         serializer = RegistrationSerializer(data=request.data)
-        # data = {}
 
         if serializer.is_valid():
 
@@ -139,7 +138,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieRefreshView(TokenRefreshView):
-    
+
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -197,17 +196,18 @@ class LogoutView(APIView):
         response.delete_cookie(
             key="access_token",
             domain=".jb-webdevelopment.com",
+
         )
         response.delete_cookie(
             key="refresh_token",
             domain=".jb-webdevelopment.com",
+
         )
 
         return response
 
 
 class PasswordResetView(APIView):
-    
     authentication_classes = []
     permission_classes = [AllowAny]
 
