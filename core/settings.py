@@ -37,7 +37,6 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://12
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
-
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend') 
 EMAIL_HOST = os.environ.get('EMAIL_HOST') 
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
