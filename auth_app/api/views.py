@@ -122,7 +122,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="None",
-	    domain=".jb-webdevelopment.com"
+	    #domain=".jb-webdevelopment.com",
+	    #path="/"
         )
 
         response.set_cookie(
@@ -131,7 +132,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="None",
-	    domain=".jb-webdevelopment.com"
+	    #domain=".jb-webdevelopment.com",
+	    #path="/"
         )
 
         return response
@@ -172,7 +174,8 @@ class CookieRefreshView(TokenRefreshView):
             httponly=True,
             secure=True,
             samesite="None",
-            domain=".jb-webdevelopment.com"
+            #domain=".jb-webdevelopment.com",
+	    #path="/"
         )
 
         return response
@@ -195,12 +198,14 @@ class LogoutView(APIView):
         )
         response.delete_cookie(
             key="access_token",
-            domain=".jb-webdevelopment.com",
+            #domain=".jb-webdevelopment.com",
+	    #path="/"
 
         )
         response.delete_cookie(
             key="refresh_token",
-            domain=".jb-webdevelopment.com",
+           #domain=".jb-webdevelopment.com",
+	   #path="/"
 
         )
 
