@@ -25,7 +25,7 @@ def generate_thumbnail(video_id):
 
     subprocess.run(cmd, check=True)
 
-    video.thumbnail_url = f"https://videoflix-backend.jb-webdevelopment.com/media/thumbnails/{video.id}.jpg"
+    video.thumbnail_url = f"{settings.BACKEND_URL}media/thumbnails/{video.id}.jpg"
     video.save()
     
 def convert_video_into_specific_resolution(resolution, scale, input_file, video_id):
@@ -37,11 +37,11 @@ def convert_video_into_specific_resolution(resolution, scale, input_file, video_
         "ffmpeg",
         "-i", input_file,
         "-vf", f"scale={scale}",
-        "-c:v", "h264",       # Video-Codec
-        "-c:a", "aac",        # Audio-Codec
-        "-f", "hls",          # Ausgabeformat
-        "-hls_time", "10",    # Segmentlänge 10 Sekunden
-        "-hls_playlist_type", "vod",  # VoD-Playlist
+        "-c:v", "h264",
+        "-c:a", "aac",        
+        "-f", "hls",          
+        "-hls_time", "10",    
+        "-hls_playlist_type", "vod",  
         output_file
     ]
     
