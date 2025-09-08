@@ -35,6 +35,13 @@ DEBUG = os.environ.get("DEBUG", default=True)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", default="http://127.0.0.1:5500")
 BACKEND_URL = os.environ.get("BACKEND_URL", default="http://127.0.0.1:8002")
 
+CSRF_COOKIE_SECURE = os.environ.get("CSRF_COOKIE_SECURE", default=True)
+SESSION_COOKIE_SECURE = os.environ.get("CSRF_COOKIE_SECURE", default=True)
+CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN", default="localhost") # ".jb-webdevelopment.com"
+SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", default="localhost") #".jb-webdevelopment.com"
+CSRF_COOKIE_SAMESITE = os.environ.get("CSRF_COOKIE_SAMESITE", default="Lax")
+SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", default="Lax")
+
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:5500").split(",")
