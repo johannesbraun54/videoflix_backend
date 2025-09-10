@@ -10,13 +10,6 @@ Backend für eine Videoplattform („Videoflix“) – eine Streaming-Anwendung 
 - [Features](#features)  
 - [Technologie-Stack](#technologie-stack)  
 - [Installation & Einrichtung](#installation--einrichtung)  
-- [Entwicklung](#entwicklung)  
-- [Deployment (Produktion)](#deployment-produktion)  
-- [Testing](#testing)  
-- [Umgebungsvariablen & Konfiguration](#umgebungsvariablen--konfiguration)  
-- [Mitwirken (Contributing)](#mitwirken-contributing)  
-- [License](#license)  
-- [Kontakt](#kontakt)
 
 ---
 
@@ -59,14 +52,14 @@ git clone https://github.com/johannesbraun54/videoflix_backend.git
 cd videoflix_backend
 
 cp .env.template .env
-# Bearbeite .env: SECRET_KEY, DATABASE_URL, REDIS_URL, ALLOWED_HOSTS etc.
+# Bearbeite .env: SECRET_KEY, DATABASE_USER, REDIS_HOST, ALLOWED_HOSTS etc.
 
 #erstelle ein virtual environment
 python3 -m venv env
 
 # venv aktivieren unter macOs / Linux
 source env/bin/activate
-# venv aktivieren unter wimdows
+# venv aktivieren unter windows
 venv\Scripts\activate
 
 # dependencies installieren
