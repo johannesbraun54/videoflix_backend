@@ -21,43 +21,36 @@ Backend für eine Videoplattform („Videoflix“) – eine Streaming-Anwendung 
 ---
 
 ## Projektüberblick  
-`videoflix_backend` ist die Backend-Komponente einer Videostreaming-Plattform. Nutze dieses Projekt, um Videos bereitzustellen, hochzuladen, in mehreren Auflösungen zu verarbeiten und als API für ein Frontend auszuliefern.
+`videoflix_backend` ist die Backend-Komponente einer Videostreaming-Plattform. Nutze dieses Projekt, um über ein Adminpanel Videos zu verwalten, in mehreren Auflösungen zu verarbeiten und als API für ein Frontend auszuliefern.
 
 ---
 
 ## Features
 
-- Benutzerregistrierung, Login (z. B. mit JWT oder Session-Cookies)  
-- Video-Upload mit automatischer Verarbeitung (Konvertierung, Thumbnails, HLS u. ä.)  
+- Benutzerregistrierung, Login mit JWT
+- Video-Upload mit automatischer Verarbeitung (Konvertierung & Thumbnailgenerierung)
 - Hintergrundverarbeitung via Redis + RQ / django-rq  
-- Speicherung von Videos, Thumbnails, HLS-Stücken (z. B. mit PostgreSQL, media-Ordner)  
-- Verwaltung von Kategorien, Watchlists, Fortschritts-Tracking (abhängig von Projektumfang)  
-- Docker-Support für einfache lokale Installation und Deployment  
+- Speicherung von Videos, Thumbnails, HLS-Stücken  
+- Verwaltung von Kategorien  
 
 ---
 
 ## Technologie-Stack
 
-- **Python** & **Django**  
+- **Python** & **Django** als Framework
 - **Django REST Framework** für API-Endpunkte  
-- **Redis** + **RQ** für asynchrone Aufgaben  
-- **FFmpeg** zur Videokonvertierung (via ffmpeg-python oder Kommando)  
+- **Redis** + **RQ** für asynchrone Videoverarbeitung
+- **FFmpeg** zur Videokonvertierung
 - **PostgreSQL** als Datenbank  
-- **Docker** + `docker-compose` für Entwicklung & Deployment  
-<!-- - **Gunicorn** + ggf. **NGINX** für Produktionsbereitstellung   -->
-<!-- - Optional: **Supervisor** zur Verwaltung von Worker-Prozessen (bei Produktion) -->
+- **Docker** + `docker-compose` (dockerfile, entrypoint.sh docker-compose.yml ) für Entwicklung & Deployment
 
 ---
 
 ## Installation & Einrichtung
 
-### Voraussetzungen
+### Requirements
 
-- Python 3.x  
-- PostgreSQL  
-- Redis  
-- FFmpeg  
-- Docker & docker-compose (optional, empfohlen)
+- siehe **requirements.txt**
 
 ### Schritt-für-Schritt (mit Docker)
 
@@ -68,17 +61,19 @@ cd videoflix_backend
 cp .env.template .env
 # Bearbeite .env: SECRET_KEY, DATABASE_URL, REDIS_URL, ALLOWED_HOSTS etc.
 
-#create a virtual environment
+#erstelle ein virtual environment
 python3 -m venv env
 
-# venv aktivieren
+# venv aktivieren unter macOs / Linux
 source env/bin/activate
+# venv aktivieren unter wimdows
+venv\Scripts\activate
 
 # dependencies installieren
 pip3 install -r requirements.txt 
 
 
 docker-compose up --build
-# Danach
+# bei Änderungen
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
