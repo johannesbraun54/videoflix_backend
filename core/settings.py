@@ -37,8 +37,8 @@ BACKEND_URL = os.environ.get("BACKEND_URL", default="http://127.0.0.1:8002")
 
 CSRF_COOKIE_SECURE = os.environ.get("CSRF_COOKIE_SECURE", default=False)
 SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", default=False)
-CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN", default="localhost") 
-SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", default="localhost") 
+CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN") or None
+SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN") or None
 CSRF_COOKIE_SAMESITE = os.environ.get("CSRF_COOKIE_SAMESITE", default="Lax")
 SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", default="Lax")
 
@@ -53,8 +53,8 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default="username")
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default="userpassword")
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
-EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') or None
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL') or None
 AUTH_EMAIL_VERIFICATION = True
 
 # Application definition

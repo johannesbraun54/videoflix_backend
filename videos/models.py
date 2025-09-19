@@ -9,6 +9,7 @@ class Video(models.Model):
     file = models.FileField(upload_to='videos/')
     thumbnail_url = models.URLField(max_length=500, blank=True, null=True)
     category = models.CharField(max_length=256)
+    is_public = models.BooleanField(default=True)
     
     def __str__(self):
         return self.title
