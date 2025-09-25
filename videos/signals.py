@@ -13,7 +13,7 @@ from django.conf import settings
 def video_post_safe(sender, instance, created, **kwargs):
     if created:
         queue = django_rq.get_queue("default", autocommit=True)
-        queue.enqueue(convert_video_into_hls, instance.file.path, instance.id)
+        queue.enqueue(convert_video_into_hls, instance.category, instance.file.path, instance.id)
         queue.enqueue(generate_thumbnail, instance.id)
     
     
@@ -27,7 +27,6 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
         thumbnail_path = os.path.join(settings.MEDIA_ROOT, "thumbnails", f"{instance.id}.jpg")
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)
-            print("(instance.file",instance.file)
         if os.path.isfile(thumbnail_path):
             os.remove(thumbnail_path)
 

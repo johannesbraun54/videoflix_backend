@@ -48,13 +48,19 @@ def convert_video_into_specific_resolution(resolution, scale, input_file, video_
     subprocess.run(cmd, check=True)
     
     
-def convert_video_into_hls(input_file, video_id):
+def convert_video_into_hls(video_category, input_file, video_id):
     
-    RESOLUTION_MAP = {
-        "480p": "854:480",
-        "720p": "1280:720",
-        "1080p": "1920:1080",
-    }    
+    RESOLUTION_MAP = {}
+    if video_category == "project_videos":
+        RESOLUTION_MAP = {
+            "1080p": "1920:990",
+        }  
+    else:
+        RESOLUTION_MAP = {
+            "480p": "854:480",
+            "720p": "1280:720",
+            "1080p": "1920:1080",
+        }    
 
     for resolution, scale in RESOLUTION_MAP.items():
         convert_video_into_specific_resolution(resolution, scale, input_file, video_id)
