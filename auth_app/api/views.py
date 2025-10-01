@@ -22,6 +22,11 @@ from ..models import PasswordResetToken, AccountActivationToken
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def check_email_availability(request):
+    """
+    View to check if an email is already registered.
+    Expects a POST request with 'email' in the request data.
+    Returns a JSON response indicating whether the email exists.
+    """
 
     if request.method == "POST":
         email = request.data.get("email")
@@ -37,6 +42,11 @@ def check_email_availability(request):
 
 
 class RegistrationView(APIView):
+    """ 
+    View to handle user registration. 
+    Expects a POST request with user details.
+    Returns a JSON response with user info and activation token on success.
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
 
@@ -47,14 +57,10 @@ class RegistrationView(APIView):
         if serializer.is_valid():
 
             new_account = serializer.save()
-            token = AccountActivationToken.objects.create(
-                key=uuid.uuid4().hex, user=new_account
-            )
-            queue = django_rq.get_queue("default", autocommit=True)
+            token = AccountActivationToken.objects.create(key=uuid.uuid4().hex, user=new_account)
             create_userprofile(new_account)
-            queue.enqueue(
-                send_email, token, "signup_email.html", "Verify your Videoflix account"
-            )
+            queue = django_rq.get_queue("default", autocommit=True)
+            queue.enqueue(send_email, token, "signup_email.html", "Verify your Videoflix account")
 
             data = {
                 "user": {
@@ -70,6 +76,11 @@ class RegistrationView(APIView):
 
 
 class AccountActivationView(APIView):
+    """
+    View to handle account activation via email link.
+    Expects a GET request with uidb64 (user id encoded in base64) and token parameters.
+    Activates the user account if the token is valid.
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
 
@@ -95,7 +106,12 @@ class AccountActivationView(APIView):
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
-    
+    """ 
+    View to handle user login and return JWT tokens in HttpOnly cookies. 
+    Expects a POST request with user credentials.
+    Returns a JSON response with user info on success.
+    """
+
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
@@ -129,13 +145,18 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             value=refresh,
             httponly=True,
             secure=True,
-            samesite="Lax"
+            samesite="Lax",
         )
 
         return response
 
 
 class CookieRefreshView(TokenRefreshView):
+    """ 
+    View to handle JWT token refresh using HttpOnly cookies. 
+    Expects a POST request with a valid refresh token in cookies.
+    Returns a JSON response with a new access token on success.
+    """
 
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
@@ -146,9 +167,7 @@ class CookieRefreshView(TokenRefreshView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = self.get_serializer(
-            data={"refresh": refresh_token}
-        )
+        serializer = self.get_serializer(data={"refresh": refresh_token})
         try:
             serializer.is_valid(raise_exception=True)
         except:
@@ -156,9 +175,7 @@ class CookieRefreshView(TokenRefreshView):
                 {"detail": "Refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED
             )
 
-        access_token = serializer.validated_data.get(
-            "access"
-        )  
+        access_token = serializer.validated_data.get("access")
         response = Response(
             {"detail": "Token refreshed", "access": access_token},
             status=status.HTTP_200_OK,
@@ -169,13 +186,18 @@ class CookieRefreshView(TokenRefreshView):
             value=access_token,
             httponly=True,
             secure=True,
-            samesite="Lax"
-       )
+            samesite="Lax",
+        )
 
         return response
 
 
 class LogoutView(APIView):
+    """
+    View to handle user logout by blacklisting the refresh token and deleting cookies.
+    Expects a POST request with a valid refresh token in cookies.
+    Returns a JSON response confirming logout.
+    """
 
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
@@ -190,17 +212,18 @@ class LogoutView(APIView):
                 "detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."
             }
         )
-        response.delete_cookie(
-            key="access_token"
-        )
-        response.delete_cookie(
-            key="refresh_token"
-        )
+        response.delete_cookie(key="access_token")
+        response.delete_cookie(key="refresh_token")
 
         return response
 
 
 class PasswordResetView(APIView):
+    """
+    View to handle password reset requests.
+    Expects a POST request with 'email' in the request data.
+    Sends a password reset email if the user exists and is active.
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
 
@@ -225,7 +248,12 @@ class PasswordResetView(APIView):
 
 
 class ConfirmPasswordView(APIView):
-    
+    """
+    View to handle password reset confirmation.
+    Expects a POST request with uidb64 (user id encoded in base64) and token parameters.
+    Resets the user's password if the token is valid.
+    """
+
     authentication_classes = []
     permission_classes = [AllowAny]
 

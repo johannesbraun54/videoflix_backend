@@ -4,6 +4,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializers registration requests and creates a new user.
+    """
     
     confirmed_password = serializers.CharField(write_only=True)
     
@@ -43,6 +46,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
 User = get_user_model()
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Custom serializer to obtain JWT token using email (instead of username) and password.
+    """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
     

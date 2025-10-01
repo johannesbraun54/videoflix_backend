@@ -5,6 +5,9 @@ from .utils import encode_user_id_to_base64
 from django.conf import settings
 
 def send_email(token, template, subject):
+    """
+    Send email to user with activation link, including token and user ID (encoded in base64).
+    """
     template_name = template 
     verify_subject = subject
     

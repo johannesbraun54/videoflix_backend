@@ -2,7 +2,6 @@ from .models import Userprofile
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 def create_username(email):
-    
     if email is not None:
         index = email.find("@")
         username = email[:index]
