@@ -15,7 +15,7 @@ def generate_thumbnail(video_id):
 
     cmd = [
         "ffmpeg",                  
-        "-ss", "00:00:05.000",    
+        "-ss", "00:00:05.000",  # thumbnail will be generated at 5 seconds
         "-i", input_path,
         "-vframes", "1",            
         "-q:v", "2",                
@@ -40,7 +40,7 @@ def convert_video_into_specific_resolution(resolution, scale, input_file, video_
         "-c:v", "h264",
         "-c:a", "aac",        
         "-f", "hls",          
-        "-hls_time", "10",    
+        "-hls_time", "10", # segment duration in seconds
         "-hls_playlist_type", "vod",  
         output_file
     ]
@@ -52,6 +52,9 @@ def convert_video_into_hls(video_category, input_file, video_id):
     
     RESOLUTION_MAP = {}
     if video_category == "project_videos":
+        """
+        For my personal portfolio videos I only need with this specific 1080p resolution.
+        """
         RESOLUTION_MAP = {
             "1080p": "1920:990",
         }  

@@ -29,5 +29,3 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
             os.remove(instance.file.path)
         if os.path.isfile(thumbnail_path):
             os.remove(thumbnail_path)
-
-### delete all convert versions 
